@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Booking | New Booking</title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" ng-app="companybookApp" ng-controller="companybookController">
+        <div th:replace="fragments/navbars::navbar">header</div>
+        <div class="form-row my-12">
+            <div class="form-group col-md-2">
+                <label>Company Name &nbsp;:</label>
+            </div>
+            <div class="form-group col-md-2">
+                <label th:text="${company.getCompanyName()}"></label>
+            </div>
+
+        </div>
+        <div class="form-row my-12">
+            <div class="form-group col-md-2">
+                <label>Price &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+            </div>
+            <div class="form-group col-md-2">
+                <label th:text="${price}"></label>
+            </div>
+        </div>
+
+        <form class="form-horizontal hidden-print" id="bookinForm" method="post" role="form"
+              th:action="@{/book/save_field_officer/}">
+            <input type="hidden" name="company" th:value="${company.id}">
+            <div class="form-row align-items-center">
+                <div class="col-sm-2 ">
+                    <label>Description &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                </div>
+                <div class="col-sm-2 ">
+                    <textarea type="text" class="form-control" th:field="*{detail.description}" id="description"
+                              placeholder="descrption"></textarea>
+                </div>
+            </div>
+
+            <div class="form-row my-4">
+                <div class="form-group col-md-3">
+                    <label>vehicle Model</label>
+                    <select class="form-control" name="vehicleModel" id="vehicleModel" th:field="*{detail.model}">
+                        <option th:value="0">------select Model------</option>
+                        <option th:each="list : ${models}" th:value="${list.id}"
+                                th:text="${list.getModelName()}"></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Vehicle Type</label>
+                    <select class="form-control" id="vehicleType" th:field="*{detail.vType}">
+                        <option th:value="0">------select Type------</option>
+                        <option th:each="list : ${types}" th:value="${{list.id}}"
+                                th:text="${list.getName()}"></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="vehicleNo">vehicle No</label>
+                    <input type="text" class="form-control" id="vehicleNo" placeholder="Vehicle No"
+                           th:field="*{detail.vehicleNo}" required>
+                </div>
+
+            </div>
+            <div class="form-row">
+            </div>
+            <input type="hidden" th:field="*{detail.searchDate}">
+
+            <div class="form-row mt-4">
+                <div class="col-md-12 text-right">
+                    <input type="button" class="btn btn-primary text-right" value="submit" ng-click="submission()">
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+
+    var currentDate = $('#datepicker1').val();
+    if (currentDate == null || currentDate == "") {
+        $(function () {
+            $("#datepicker1").datepicker({
+                minDate: 0,
+                dateFormat: 'yy-mm-dd'
+            }).datepicker('setDate', 'today');
+        });
+    } else {
+        $(function () {
+            $("#datepicker1").datepicker({
+                minDate: 0,
+                dateFormat: 'yy-mm-dd'
+            });
+        });
+    }
+
+    angular.module('companybookApp', []).controller('companybookController', function ($scope, $http, $filter) {
+
+        $scope.submission = function () {
+            var model = $('#vehicleModel').val();
+            var type = $('#vehicleType').val();
+            var vehicleno = $('#vehicleNo').val();
+            var description = $('#description').val();
+
+            if (model == 0) {
+                swal({
+                    text: "Please Select the Vehicle Model !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (type == 0) {
+                swal({
+                    text: "Please Select the Vehicle Type !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (vehicleno == "") {
+                swal({
+                    text: "Please Enter the Vehicle Registration No !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (description == "") {
+                swal({
+                    text: "Please Enter the Description !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else {
+
+                $('#bookinForm').submit()
+            }
+        }
+    });
+</script>
+</html>

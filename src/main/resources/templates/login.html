@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>OnlineAutomobileService</title>
+
+    <th:block th:replace="fragments/scripts::scripts">scripts</th:block>
+    <style>
+        .swal2-modal .swal2-title {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" ng-app="loginApp" ng-controller="loginController">
+    <div class="row">
+        <div class="col-lg-4 col-md-3 text-center"></div>
+        <div class="col-lg-4 col-md-6 text-center">
+            <h2 class="text-center" style="color: lightslategray;  margin-top: 15%">Online Automobile Service</h2>
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" action="/login">
+                        <img id="profile-img" class="profile-img-card" th:src="@{/images/avatar.png}"/>
+                        <div th:if="${param.error != null}">
+                            <div>
+                                <div align="center" th:if="${session['SPRING_SECURITY_LAST_EXCEPTION'] != null}">
+                                    <span th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"
+                                          class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input th:if="*{info.userType != 1}" type="text" id="uname" name="username" class="form-control" placeholder="Username"
+                                   required
+                                   autofocus th:value="*{info.email}">
+                            <input th:if="*{info.userType == 1}" type="text" id="uname1" name="username" class="form-control" placeholder="Username"
+                                   required
+                                   autofocus value="root">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="pwd" name="password" class="form-control" placeholder="Password"
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label> <input type="checkbox"> Save password </label>
+                            </div>
+                        </div>
+                        <button class="btn btn-lg btn-success btn-block btn-signin" type="submit">NEXT</button>
+
+                        <a href="/register" class="forgot-password">
+                            Register now
+                        </a>
+                        <a class="nav-link" href="/">Main site</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-3 text-center"></div>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+
+    angular.module('loginApp', [])
+        .controller('loginController', function ($scope, $http, $filter) {
+            var user = [[${info.email}]]
+            var type = [[${info.userType}]]
+
+            $scope.loadError = function () {
+
+                if (type == 1 && user != null) {
+                    swal("WELCOME TO ONLINE AUTOMOBILE SERVICE\n \n ------\n Registration is success. \n\n User name is USERNAME root");
+                } else if (type != 1 && user != null) {
+                    swal("WELCOME TO ONLINE AUTOMOBILE SERVICE\n \n ------\n Registration is success. \n\n User name is USERNAME "+user);
+                }
+            }
+            $scope.loadError()
+        })
+
+</script>
+</body>
+<style>
+
+    .profile-img-card {
+        width: 96px;
+        height: 96px;
+        margin: 0 auto 10px;
+        display: block;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+    }
+
+</style>
+</html>

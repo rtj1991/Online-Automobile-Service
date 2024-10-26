@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>main page</title>
+    <th:block th:replace="fragments/scripts::scripts">scripts</th:block>
+</head>
+<body class="bg-light">
+<!--<div class="container">-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a href="/"><img style="width: 7.3%;" th:src="@{/images/logo1.jpg}"></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Home
+                    <span class="sr-only">(current)</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Contact</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    Services
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#">Booking</a>
+                    <a class="dropdown-item" href="/book/findService">Find Service</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/register">Register</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/login">login</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div id="carouselExampleIndicators" class="carousel slide pt-xl-5" data-ride="carousel">
+
+    <div id="content" style="width: 100%" ng-app="findApp" ng-controller="findController">
+
+        <form class="form-horizontal hidden-print" method="post" role="form" action="/book/findService">
+            <div class="panel panel-default mt-5">
+                <div class="panel-body ">
+                    <div class="form-row align-items-center">
+                        <div class="col-sm-1 my-1"><label>Location</label></div>
+                        <div class="col-sm-3 my-1">
+
+                            <select class="form-control" id="location" name="location"
+                                    th:field="*{reportSearch.location}">
+                                <option th:value="0">------select location------</option>
+                                <option th:each="list : ${location}" th:value="${{list.id}}"
+                                        th:text="${list.getLocationName()}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-auto my-1">
+                            <div class="form-check">
+
+                            </div>
+                        </div>
+                        <div class="col-auto my-1">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div class="col-md-12 panel">
+            <p style="font-size:26px;color:#0f0f0f;margin: 0px;line-height:25px;padding-top:55px;"
+               class="text-center">Online Automobile Service</p>
+            <p style="font-size:18px;color:#0f0f0f;margin: 0px;line-height:25px;" class="text-center"><b>
+                Service List</b></p>
+            <div style="width: 100%; padding-left: 2%; padding-right: 2%; padding-top: 2%">
+                <table class="table" id="report">
+                    <tr>
+                        <th>NAME</th>
+                        <th>LOCATION</th>
+                        <th>OPEN TIME</th>
+                        <th>CLOSE TIME</th>
+                        <th>TYPE</th>
+                        <th>ACTION</th>
+                    </tr>
+                    <tr th:each="detail:${companyList}">
+                        <td th:text="${detail.companyName}"></td>
+                        <td th:text="${detail.companyLocation.getLocationName()}"></td>
+                        <td th:text="${detail.startTime}"></td>
+                        <td th:text="${detail.endTime}"></td>
+                        <td th:text="${detail.companyType.getType()}"></td>
+                        <td><a href="#">
+                            <button ng-click="booking()" class="btn btn-success " type="submit">
+                                booking <i class="fa fa-search"></i></button>
+                        </a></td>
+
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer class="bg-light text-center text-lg-start">
+
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
+        © 2020 Copyright:
+        <a class="text-dark" href="https://mdbootstrap.com/">MDBootstrap.com</a>
+    </div>
+</footer>
+
+</div>
+<!--</div>-->
+<script type="text/javascript" th:inline="javascript">
+
+    angular.module('findApp', []).controller('findController', function ($scope) {
+
+
+        $scope.booking = function () {
+            swal({
+                text: "You need to log",
+                showCancelButton: true,
+                confirmButtonColor: "#00c853",
+                cancelButtonColor: "#e53935",
+                confirmButtonText: '<i class="fa fa-cloud-upload"></i> Loging',
+                cancelButtonText: '<i class="fa fa-times-circle"></i> Close',
+                animation: true,
+                buttonsStyling: true
+            }).then(function (isConfirm) {
+                if (isConfirm) {
+                    window.open("/login")
+
+                } else {
+                    swal("Cancelled", "", "error");
+                }
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    swal("Cancelled", "", "error");
+                }
+            })
+        }
+    });
+
+    $('#carouselExampleIndicators').carousel({
+        interval: 3000,
+        cycle: true
+    });
+</script>
+</body>
+</html>

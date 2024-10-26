@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Booking | New Booking</title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+    <style>
+        .rating {
+            color: #a9a9a9;
+            margin: 0;
+            padding: 0;
+        }
+
+        ul.rating {
+            display: inline-block;
+        }
+
+        .rating li {
+            list-style-type: none;
+            display: inline-block;
+            padding: 1px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 40px;
+        }
+
+        .rating .filled {
+            color: #ffee33;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" ng-app="companybookApp" ng-controller="companybookController">
+        <div th:replace="fragments/navbars::navbar">header</div>
+        <form class="form-horizontal hidden-print" id="dateSearch" method="post" role="form"
+              th:action="@{/book/companybooking/} + ${company.id}">
+
+            <div class="form-row my-12">
+                <div class="form-group col-md-2">
+                    <label>Company Name &nbsp;:</label>
+                </div>
+                <div class="form-group col-md-2">
+                    <label th:text="${company.getCompanyName()}"></label>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>Available Booking Date :</label>
+                </div>
+                <div class="form-group col-md-2">
+
+                    <input class="form-control" name="searchDate" id="datepicker1" th:field="*{detail.searchDate}"
+                           required>
+                </div>
+                <div class="form-group col-md-2">
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </div>
+            </div>
+            <div class="form-row my-12">
+                <div class="form-group col-md-2">
+                    <label>Booking Limit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</label>
+                </div>
+                <div class="form-group col-md-2">
+                    <label th:text="${company.getBookingLimit()}"></label>
+                </div>
+
+                <div class="form-group col-md-2">
+                    <label>Available Booking &nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                </div>
+                <div class="form-group col-md-2">
+                    <input type="hidden" name="company">
+                    <label th:text="${booking}"></label>
+                </div>
+            </div>
+
+        </form>
+        <form class="form-horizontal hidden-print" id="bookinForm" method="post" role="form"
+              th:action="@{/book/saveBooking/}">
+            <input type="hidden" name="company" th:value="${company.id}">
+            <div class="form-row align-items-center">
+                <div class="col-sm-2 ">
+                    <label>Description &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                </div>
+                <div class="col-sm-2 ">
+                    <textarea type="text" class="form-control" th:field="*{detail.description}" id="description"
+                              placeholder="descrption"></textarea>
+                </div>
+            </div>
+
+            <div class="form-row my-4">
+                <div class="form-group col-md-3">
+                    <label>vehicle Model</label>
+                    <select class="form-control" name="vehicleModel" id="vehicleModel" th:field="*{detail.model}">
+                        <option th:value="0">------select Model------</option>
+                        <option th:each="list : ${models}" th:value="${list.id}"
+                                th:text="${list.getModelName()}"></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Vehicle Type</label>
+                    <select class="form-control" id="vehicleType" th:field="*{detail.vType}">
+                        <option th:value="0">------select Type------</option>
+                        <option th:each="list : ${types}" th:value="${{list.id}}"
+                                th:text="${list.getName()}"></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="vehicleNo">vehicle No</label>
+                    <input type="text" class="form-control" id="vehicleNo" placeholder="Vehicle No"
+                           th:field="*{detail.vehicleNo}" required>
+                </div>
+
+            </div>
+            <div class="form-row">
+            </div>
+            <input type="hidden" th:field="*{detail.searchDate}">
+
+            <div class="form-row">
+                <div class="col-md-6">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <table class="table">
+                                <tr>
+                                    <th>#</th>
+                                    <th>DESCRIPTION</th>
+                                    <th>PRICE</th>
+                                    <th>ACTION</th>
+                                </tr>
+                                <tr ng-show="checkStatus == false" ng-repeat="cart in serviceType">
+                                    <td>{{cart.id}}</td>
+                                    <td>{{cart.description}}</td>
+                                    <td>{{cart.price}}</td>
+                                    <td>
+                                        <i class="btn btn-success fa fa-plus" ng-click="AddtoCart(cart)"
+                                           aria-hidden="true"></i>
+                                    </td>
+
+                                </tr>
+                                <tr ng-show="checkStatus == true" ng-repeat="cart in SecondaryserviceType">
+                                    <td>{{cart.id}}</td>
+                                    <td>{{cart.description}}</td>
+                                    <td>{{cart.price}}</td>
+                                    <td>
+                                        <i class="btn btn-success fa fa-plus" ng-click="AddtoCart(cart)"
+                                           aria-hidden="true"></i>
+                                    </td>
+
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <table class="table">
+                                <tr>
+                                    <th>#</th>
+                                    <th>DESCRIPTION</th>
+                                    <th>PRICE</th>
+                                    <th>ACTION</th>
+                                </tr>
+                                <tr ng-repeat="cart in serviceCart">
+                                    <td>{{cart.id}}</td>
+                                    <td>{{cart.type}}</td>
+                                    <td class="text-right">{{cart.price}}</td>
+                                    <td>
+                                        <i class="btn btn-danger fa fa-trash" ng-click="remove($index,cart)"
+                                           aria-hidden="true"></i>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" ng-show="checkStatus == true" class="text-right">{{totalPrice()}}
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row mt-4">
+                <div class="col-md-12 text-right">
+                    <input type="button" class="btn btn-primary text-right" value="submit" ng-click="submission()">
+                </div>
+            </div>
+            <input type="hidden" name="carts" value="{{serviceCart}}">
+            <input type="hidden" name="total" value="{{totalPrice()}}">
+        </form>
+        <div class="modal fade" id="newType" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center" id="exampleModalLabel">Company Rating..</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="mt-4" star rating-value="ratingVal" max="max"
+                    ></div>
+                    <div class="mt-4">
+                        <h5 class="text-center">Rate us..... !</h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary text-center" ng-click="rateSubmit()">Save</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+
+    var status = [[${status}]]
+    if (status == 1) {
+        $(window).on('load', function () {
+            $('#newType').modal('show');
+        });
+    }
+
+
+    var currentDate = $('#datepicker1').val();
+    if (currentDate == null || currentDate == "") {
+        $(function () {
+            $("#datepicker1").datepicker({
+                minDate: 0,
+                dateFormat: 'yy-mm-dd'
+            }).datepicker('setDate', 'today');
+        });
+    } else {
+        $(function () {
+            $("#datepicker1").datepicker({
+                minDate: 0,
+                dateFormat: 'yy-mm-dd'
+            });
+        });
+    }
+
+    var app = angular.module("companybookApp", []);
+    app.controller('companybookController', function ($scope, $filter) {
+        var available_booking = [[${booking}]];
+        var company = [[${company.id}]];
+
+        $scope.serviceCart = [];
+        /** right side cart **/
+        $scope.serviceType = [];
+        /** left side primary cart **/
+        $scope.SecondaryserviceType = [];
+        /** left side secondary cart **/
+        $scope.checkStatus = false;
+
+        $scope.loadMainService = function () {
+            $.post("/api/getMainService", {company: company}).done(function (data) {
+                console.log(data)
+                $scope.serviceType = data
+                $scope.$apply();
+            });
+        }
+        $scope.loadMainService()
+
+        $scope.getSecondaryService = function () {
+            $.post("/api/getSecondaryService", {company: company}).done(function (data) {
+                $scope.SecondaryserviceType = data
+                $scope.$apply();
+            });
+        }
+        $scope.getSecondaryService()
+
+        $scope.AddtoCart = function (value) {
+
+            var result = $filter('filter')($scope.serviceCart, {status: value.status}, true);
+            var resultSecondary = $filter('filter')($scope.serviceCart, {status: value.status, id: value.id}, true);
+            if (result.length == 0) {
+                $scope.checkStatus = true;
+                $scope.serviceCart.push({
+                    id: value.id,
+                    type: value.description,
+                    price: value.price,
+                    status: value.status
+                })
+            } else {
+                $scope.checkStatus = true;
+                if (resultSecondary == 0) {
+                    $scope.serviceCart.push({
+                        id: value.id,
+                        type: value.description,
+                        price: value.price,
+                        status: value.status
+                    })
+                } else {
+                    swal("You Can Add Only One Time")
+                }
+            }
+            $scope.totalPrice()
+        }
+
+        $scope.remove = function (value, cart) {
+
+            var resultSecondary = $filter('filter')($scope.serviceCart, {status: cart.status, id: cart.id}, true);
+            console.log($scope.serviceCart.length)
+            if ($scope.serviceCart.length > 1) {
+                $scope.serviceCart.splice(value, 1)
+
+                var result = $filter('filter')($scope.serviceCart, {status: cart.status}, true);
+
+                if (cart.status == 2) {
+                    $scope.checkStatus = true;
+                    $scope.serviceType.push({
+                        id: cart.id,
+                        type: cart.description,
+                        price: cart.price,
+                        status: cart.status
+                    })
+
+                } else {
+                    if (result.length == 0) {
+                        $scope.checkStatus = false;
+                    } else {
+                        $scope.checkStatus = true;
+
+                    }
+                }
+            } else {
+                swal({
+                    text: "You Can not Remove !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timerProgressBar: true,
+                })
+            }
+
+            $scope.totalPrice()
+
+        }
+
+        $scope.totalPrice = function () {
+            var totalamount = 0;
+            angular.forEach($scope.serviceCart, function (value, key) {
+                totalamount += value.price
+            });
+            return totalamount;
+        }
+        if (available_booking < 1) {
+            $('#vehicleModel').prop("disabled", true)
+            $('#vehicleType').prop("disabled", true)
+            $('#serviceType').prop("disabled", true)
+            $('#vehicleNo').prop("disabled", true)
+            $('#description').prop("disabled", true)
+        }
+        $scope.submission = function () {
+
+            var model = $('#vehicleModel').val();
+            var type = $('#vehicleType').val();
+            var service = $('#serviceType').val();
+            var vehicleno = $('#vehicleNo').val();
+            var description = $('#description').val();
+
+            if (available_booking < 1) {
+                swal({
+                    text: "You Do Not Have Enough Booking Today !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timerProgressBar: true,
+                })
+            } else if (model == 0) {
+                swal({
+                    text: "Please Select the Vehicle Model !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (type == 0) {
+                swal({
+                    text: "Please Select the Vehicle Type !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (service == 0) {
+                swal({
+                    text: "Please Select the Service Type !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (vehicleno == "") {
+                swal({
+                    text: "Please Enter the Vehicle Registration No !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (description == "") {
+                swal({
+                    text: "Please Enter the Description !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if ($scope.serviceCart.length < 1) {
+                swal({
+                    text: "Please Add The Service !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else {
+
+                $('#bookinForm').submit()
+            }
+
+        }
+
+        // rating start
+        $scope.max = 10;
+        $scope.ratingVal = 0;
+
+        $scope.onChange = function (val) {
+            $scope.ratingVal = val;
+        }
+
+        $scope.rateSubmit = function () {
+            $.post("/api/save_rating", {company: company, rate: $scope.ratingVal}).done(function (data) {
+                console.log(data.status)
+                if (data.status == 1) {
+                    $(function () {
+                        $('#newType').modal('toggle');
+                    });
+                    swal({
+                        text: "Thank You Rate With us !",
+                        animation: true,
+                        buttonsStyling: true,
+                        timer: 2000,
+                        timerProgressBar: true,
+                    })
+                }
+            });
+        }
+    });
+    app.directive('star', function () {
+        return {
+            template: '<ul class="rating" ng-mouseleave="leave()">' +
+            '<li ng-repeat="star in stars" ng-class="star" ng-click="click($index + 1)" ng-mouseover="over($index + 1)">' +
+            '\u2605' +
+            '</li>' +
+            '</ul>',
+            scope: {
+                ratingValue: '=',
+                max: '=',
+            },
+            controller: function ($scope) {
+                $scope.ratingValue = $scope.ratingValue || 0;
+                $scope.max = $scope.max || 5;
+                $scope.click = function (val) {
+                    $scope.ratingValue = val;
+                };
+
+            },
+            link: function (scope, elem, attrs) {
+                elem.css("text-align", "center");
+                var updateStars = function () {
+                    scope.stars = [];
+                    for (var i = 0; i < scope.max; i++) {
+                        scope.stars.push({
+                            filled: i < scope.ratingValue
+                        });
+                    }
+                };
+                updateStars();
+
+                scope.$watch('ratingValue', function (oldVal, newVal) {
+                    if (newVal) {
+                        updateStars();
+                    }
+                });
+                scope.$watch('max', function (oldVal, newVal) {
+                    if (newVal) {
+                        updateStars();
+                    }
+                });
+            }
+        };
+    });
+</script>
+</html>

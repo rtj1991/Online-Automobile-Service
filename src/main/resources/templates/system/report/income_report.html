@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Receipt | Receipt</title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+    <style>
+        .cnt {
+            margin: auto;
+            width: 70%;
+            padding: 20px;
+        }
+
+        .hdr {
+            font-style: normal;
+            font-size: 2em;
+        }
+
+        td {
+
+        }
+
+        tr > td {
+            padding: 5px;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%">
+        <div th:replace="fragments/navbars::navbar">header</div>
+
+        <div class="container-fluid small" ng-app="incomeApp" ng-controller="incomeController">
+            <div class="panel panel-heading hidden-print">
+                <div class="row">
+                    <form class="form-horzontal" role="form" method="get" action="/reports/income">
+                        <div class="row">
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-1">
+                                <label for="start">From</label>
+                            </div>
+                            <div class="col-sm-3">
+                                <input class="form-control input-sm" name="start" id="start"
+                                       th:field="*{reportSearch.dateFrom}">
+                            </div>
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-1">
+                                <label for="end">To</label>
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control input-sm" name="end" id="end"
+                                       th:field="*{reportSearch.dateTo}">
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="submit" ng-click="chartfunnela()" class="btn btn-danger input-sm">
+                                    Generate
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr>
+            <div id="container" style="min-width: 410px; max-width: 600px; height: 400px; margin: 0 auto">
+            </div>
+            <hr>
+            <div class="panel panel-primary" id="dvData">
+
+                <div class="panel panel-body">
+                    <div>
+                        <div class="row" id="water_erp_header">
+                            <div class="col-sm-5"></div>
+                            <div class="col-sm-4">
+                                <p th:text="${user.getCompanyName()}"></p>
+                            </div>
+                        </div>
+                        <div class="row" id="water_erp_header2">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-4">
+                                <p style="margin-left: 24.5%">Income Report</p>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table" id="indextable">
+                        <thead class="panel-heading">
+                        <tr>
+                            <th>Date</th>
+                            <th>#Invoice no</th>
+                            <th>Sales person</th>
+                            <th class="text-right">Total</th>
+                            <th class="text-right">Paid</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${not #lists.isEmpty(receipt)}" th:each="invoice : ${receipt}">
+                            <td class="small" th:text="${#dates.format(invoice.timestampCreated,'yyyy-MMM-dd')}"></td>
+                            <td class="small" th:text="${invoice.id}"></td>
+                            <td class="small" th:text="${invoice.createdBy.fullName}"></td>
+
+                            <td class="small text-right"
+                                th:text="${#numbers.formatDecimal(invoice.totalAmount,0, 'COMMA', 2, 'POINT')}"></td>
+                            <td class="small text-right"
+                                th:text="${#numbers.formatDecimal(invoice.paidAmount,0, 'COMMA', 2, 'POINT')}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <table class="table">
+                        <th class="text-right" colspan="5" th:text="${sum}"></th>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script th:inline="javascript">
+    $("#start").datepicker({dateFormat: 'yy-mm-dd'});
+    $("#end").datepicker({dateFormat: 'yy-mm-dd'});
+
+    angular.module('incomeApp', []).controller('incomeController', function ($scope, $http) {
+
+        $scope.chartfunnela = function () {
+
+            var fromDate = $('#start').val()
+            var toDate = $('#end').val()
+
+            $.post("/api/chart/", {fdate: fromDate, todate: toDate}).done(function (data) {
+                if (data != null) {
+                    $scope.chartArray = []
+                    $scope.days = []
+                    $scope.data = data
+
+                    angular.forEach($scope.data, function (value) {
+                        var date = new Date(value.days);
+                        $scope.chartArray.push(date.toLocaleDateString());
+                        $scope.days.push(value.sum);
+                    })
+
+                    Highcharts.chart('container', {
+                        chart: {
+                            type: 'column'
+                        },
+                        title: {
+                            text: 'Income'
+                        },
+                        xAxis: {
+                            categories: $scope.chartArray,
+                            crosshair: true
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'ammount'
+                            }
+                        },
+                        plotOptions: {
+                            line: {
+                                dataLabels: {
+                                    enabled: true
+                                },
+                                enableMouseTracking: false
+                            }
+                        },
+                        series: [{
+                            name: 'Sales',
+                            data: $scope.days
+                        }]
+                    });
+                }
+            });
+        }
+        $scope.chartfunnela()
+
+    });
+</script>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Booking | Find Location</title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" ng-app="bookApp" ng-controller="bookController">
+        <div th:replace="fragments/navbars::navbar">header</div>
+
+        <form class="form-horizontal hidden-print" method="post" role="form" action="/book/carrier_service/">
+            <div class="panel panel-default mt-5">
+                <div class="panel-body ">
+                    <div class="form-row align-items-center">
+                        <div class="col-sm-1 my-1"><label>Location</label></div>
+                        <div class="col-sm-3 my-1">
+
+                            <select class="form-control" id="location" name="location"
+                                    th:field="*{reportSearch.location}">
+                                <option th:value="0">------select location------</option>
+                                <option th:each="list : ${location}" th:value="${{list.id}}"
+                                        th:text="${list.getLocationName()}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-auto my-1">
+                            <div class="form-check">
+
+                            </div>
+                        </div>
+                        <div class="col-auto my-1">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div class="col-md-12 panel">
+            <p style="font-size:26px;color:#0f0f0f;margin: 0px;line-height:25px;padding-top:55px;"
+               class="text-center">Online Automobile Service</p>
+            <p style="font-size:18px;color:#0f0f0f;margin: 0px;line-height:25px;" class="text-center"><b>
+                Carrier Service List</b></p>
+            <div style="width: 100%; padding-left: 2%; padding-right: 2%; padding-top: 2%">
+                <table class="table" id="report">
+                    <tr>
+                        <th>NAME</th>
+                        <th>LOCATION</th>
+                        <th>OPEN TIME</th>
+                        <th>CLOSE TIME</th>
+                        <th>TYPE</th>
+                        <th>ACTION</th>
+                    </tr>
+                    <tr th:each="detail:${companyList}">
+                        <td th:text="${detail.companyName}"></td>
+                        <td th:text="${detail.companyLocation.getLocationName()}"></td>
+                        <td th:text="${detail.startTime}"></td>
+                        <td th:text="${detail.endTime}"></td>
+                        <td th:text="${detail.companyType.getType()}"></td>
+                        <td><a href="#">
+                            <button class="btn btn-success" th:id="${detail.getId()}" onclick="booking(this.id)">
+                                booking <i class="fa fa-search"></i></button>
+                        </a></td>
+
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+
+    function booking(id) {
+        window.open("/book/carrier_service_booking/"+id, '_self')
+    }
+    angular.module('bookApp', []).controller('bookController', function ($scope, $http) {
+
+    });
+</script>
+</html>

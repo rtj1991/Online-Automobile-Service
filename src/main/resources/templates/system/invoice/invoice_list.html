@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Invoice | Invoice List</title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" ng-app="bookApp" ng-controller="bookController">
+        <div th:replace="fragments/navbars::navbar">header</div>
+
+        <form class="form-horizontal hidden-print" method="post" role="form" action="/book/booking/">
+            <div class="panel panel-default mt-5">
+                <div class="panel-body ">
+
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div class="col-md-12 panel">
+            <p style="font-size:26px;color:#0f0f0f;margin: 0px;line-height:25px;padding-top:55px;"
+               class="text-center">Online Automobile Service</p>
+            <p style="font-size:18px;color:#0f0f0f;margin: 0px;line-height:25px;" class="text-center"><b>
+                Invoice List</b></p>
+            <div style="width: 100%; padding-left: 2%; padding-right: 2%; padding-top: 2%">
+                <table class="table small" id="report">
+                    <tr>
+                        <th>APPOINTED DATE</th>
+                        <th>MOBILE NUMBER</th>
+                        <th>DESCRIPTION</th>
+                        <th>VEHICLE NO</th>
+                        <th>STATUS</th>
+                        <th class="text-center">ACTION</th>
+                        <th class="text-center">VIEW</th>
+                    </tr>
+                    <tr th:each="detail:${booking}">
+                        <td th:text="${#dates.format(detail.appointedDate,'yyyy-MMM-dd')}"></td>
+                        <td th:text="${detail.createdBy.recoveryPhone}"></td>
+                        <td th:text="${detail.description}"></td>
+                        <td th:text="${detail.vehicleNo}"></td>
+                        <td th:if="*{detail.processStatus == 1}">PENDING...</td>
+                        <td th:if="*{detail.processStatus == 2}">PROCESSING...</td>
+                        <td th:if="*{detail.processStatus == 3}">PROCESS COMPLETE</td>
+                        <td th:if="*{detail.cancelStatus == 1 && detail.processStatus == 0}">CANCELED</td>
+                        <td class="text-center">
+                            <button th:if="*{detail.paidStatus != 1}" class="btn btn-danger"
+                                    th:attr="ng-click='receipt(\''+${detail.getId()}+'\');'"><i
+                                    class="fa fa-pencil" aria-hidden="true"></i></button>
+                            </button>
+                            <!--<button th:if="*{detail.paidStatus != 1}" class="btn btn-success"-->
+                                    <!--th:attr="ng-click='view(\''+${detail.getId()}+'\');'"><i-->
+                                    <!--class="fa fa-eye" aria-hidden="true"></i></button>-->
+                            <!--</button>-->
+                        </td>
+                        <td class="text-center">
+                            <button th:if="*{detail.paidStatus != 1}" class="btn btn-outline-primary" th:attr="ng-click='view(\''+${detail.id}+'\');'"><i
+                                    class="fa fa-eye"></i>
+                            </button>
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+
+
+    angular.module('bookApp', []).controller('bookController', function ($scope) {
+
+        $scope.view = function (id) {
+
+            swal({
+                text: "Do You Want To View Receipt !",
+                showCancelButton: true,
+                confirmButtonColor: "#00c853",
+                cancelButtonColor: "#e53935",
+                confirmButtonText: '<i class="fa fa-cloud-upload"></i> Yes',
+                cancelButtonText: '<i class="fa fa-times-circle"></i> Close',
+                animation: true,
+                buttonsStyling: true
+            }).then(function (isConfirm) {
+                if (isConfirm) {
+                    window.open("/receipt/view_invoice/" + id, '_blank')
+
+                } else {
+                    swal("Cancelled", "", "error");
+                }
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    swal("Cancelled", "", "error");
+                }
+            })
+        }
+
+        $scope.receipt=function (value) {
+            swal({
+                text: "Do You Want To Complete This Booking !",
+                showCancelButton: true,
+                confirmButtonColor: "#00c853",
+                cancelButtonColor: "#e53935",
+                confirmButtonText: '<i class="fa fa-cloud-upload"></i> Yes',
+                cancelButtonText: '<i class="fa fa-times-circle"></i> Close',
+                animation: true,
+                buttonsStyling: true
+            }).then(function (isConfirm) {
+
+                if (isConfirm) {
+                    window.swal({
+                        title: "Progressing........!",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                    $.post("/api/complete_progress", {id: value}).done(function (data) {
+                        if (data != null) {
+                            location.reload()
+                        }
+                    });
+
+                } else {
+                    swal("Cancelled", "", "error");
+                }
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    swal("Cancelled", "", "error");
+                }
+            })
+        }
+        // $scope.receipt = function (value) {
+        //     swal({
+        //         text: "Do You Want To Create A Receipt !",
+        //         showCancelButton: true,
+        //         confirmButtonColor: "#00c853",
+        //         cancelButtonColor: "#e53935",
+        //         confirmButtonText: '<i class="fa fa-cloud-upload"></i> Yes',
+        //         cancelButtonText: '<i class="fa fa-times-circle"></i> Close',
+        //         animation: true,
+        //         buttonsStyling: true
+        //     }).then(function (isConfirm) {
+        //         if (isConfirm) {
+        //
+        //             window.swal({
+        //                 title: "Progressing........!",
+        //                 showConfirmButton: false,
+        //                 timer: 2000
+        //             });
+        //             $.post("/api/create_receipt/", {id: value}).done(function (data) {
+        //                 if (data != null) {
+        //                     location.reload()
+        //                 }
+        //             });
+        //
+        //             // window.open("/receipt/create_receipt/" + value, '_blank')
+        //
+        //         } else {
+        //             swal("Cancelled", "", "error");
+        //         }
+        //     }, function (dismiss) {
+        //         if (dismiss === 'cancel') {
+        //             swal("Cancelled", "", "error");
+        //         }
+        //     })
+        // }
+
+    });
+</script>
+</html>

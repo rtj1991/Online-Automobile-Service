@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<th:block th:fragment="sidebar">
+
+    <nav class="nav-menu" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Automobile <br>Service</h3>
+            <strong>AS</strong>
+        </div>
+        <ul class="list-unstyled components" th:if="${not #lists.isEmpty(session.modules)}">
+            <li th:each="row : ${session.modules}">
+
+                <a th:if="${row.statusRedirect ne T(com.online.automobile.util.Const).STATUS_REDIRECT }"
+                   th:href="${row.statusRedirect eq T(com.online.automobile.util.Const).STATUS_REDIRECT ? row.route : '#menu_'+row.id }"
+                   data-toggle="collapse" aria-expanded="false">
+                    <i th:class="${row.faIcon}"></i>
+                    <span th:text="${row.module}"></span>
+                </a>
+                <a th:if="${row.statusRedirect eq T(com.online.automobile.util.Const).STATUS_REDIRECT }"
+                   th:href="${row.statusRedirect eq T(com.online.automobile.util.Const).STATUS_REDIRECT ? row.route : '#menu_'+row.id }">
+                    <i th:class="${row.faIcon}"></i>
+                    <span th:text="${row.module}"></span>
+                </a>
+                <ul class="collapse list-unstyled" th:id="'menu_'+${row.id}" th:if="${not #lists.isEmpty(row.modules)}">
+                    <li th:each="sRow : ${row.modules}">
+                        <a th:href="${sRow.statusRedirect eq T(com.online.automobile.util.Const).STATUS_REDIRECT ? sRow.route : '#menu_'+sRow.id }"
+                           th:text="${sRow.module}">
+                            <!--<i th:class="${sRow.faIcon}"></i>-->
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <ul class="list-unstyled CTAs">
+            <li><a href="/dashboard" class="article">Back to Home</a></li>
+        </ul>
+    </nav>
+</th:block>
+<th:block th:fragment="navbar">
+    <nav class="navbar navbar-light bg-white justify-content-between mb-4">
+        <a class="btn btn-info" onclick="collapse()" id="sidebarCollapse"><i
+                class="fa fa-align-left text-white"></i></a>
+
+        <div class="form-inline">
+            <form action="/logout">
+                <button class="btn btn-outline-success" type="submit">Logout</button>
+            </form>
+            <a class="btn btn-outline-success ml-1"  href="/user/profile" type="button">Profile</a>
+        </div>
+    </nav>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Booking | Booking List</title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" ng-app="bookApp" ng-controller="bookController">
+        <div th:replace="fragments/navbars::navbar">header</div>
+
+        <form class="form-horizontal hidden-print" method="post" role="form" action="/book/booking/">
+            <div class="panel panel-default mt-5">
+                <div class="panel-body ">
+
+                </div>
+            </div>
+        </form>
+        <hr>
+        <div class="col-md-12 panel">
+            <p style="font-size:26px;color:#0f0f0f;margin: 0px;line-height:25px;padding-top:55px;"
+               class="text-center">Online Automobile Service</p>
+            <p style="font-size:18px;color:#0f0f0f;margin: 0px;line-height:25px;" class="text-center"><b>
+                Field Officer List</b></p>
+            <div style="width: 100%; padding-left: 2%; padding-right: 2%; padding-top: 2%">
+                <table class="table small" id="report">
+                    <tr>
+                        <th>APPOINTED DATE</th>
+                        <th>MOBILE NUMBER</th>
+                        <th>DESCRIPTION</th>
+                        <th>VEHICLE NO</th>
+                        <th>STATUS</th>
+                        <th class="text-center">ACTION</th>
+                        <th class="text-center">VIEW</th>
+                    </tr>
+                    <tr th:each="detail:${bookingList}">
+                        <td th:text="${#dates.format(detail.appointedDate,'yyyy-MMM-dd')}"></td>
+                        <td th:text="${detail.createdBy.recoveryPhone}"></td>
+                        <td th:text="${detail.description}"></td>
+                        <td th:text="${detail.vehicleNo}"></td>
+                        <td th:if="*{detail.processStatus == 1}">PENDING...</td>
+                        <td th:if="*{detail.processStatus == 2}">PROCESSING...</td>
+                        <td th:if="*{detail.processStatus == 3}">PROCESS COMPLETE</td>
+                        <td th:if="*{detail.cancelStatus == 1 && detail.processStatus == 0}">CANCELED</td>
+                        <td class="text-center"><a href="#">
+                            <button th:if="*{(user_type == 2 || user_type == 3 || user_type == 1)&&detail.processStatus != 2}"
+                                    class="btn btn-success"
+                                    th:id="manage+${detail.getId()}"
+                                    th:attr="ng-click='manage(\''+${detail.getId()}+'\');'">
+                                Manage
+                            </button>
+                            <button th:if="*{detail.processStatus == 2}"
+                                    class="btn btn-success"
+                                    th:id="manage+${detail.getId()}"
+                                    th:attr="ng-click='completeProcess(\''+${detail.getId()}+'\');'">
+                                Manage
+                            </button>
+                            <button th:if="*{detail.processStatus == 0}" class="btn btn-danger"
+                                    th:attr="ng-click='cancel(\''+${detail.getId()}+'\');'"><i
+                                    class="fa fa-trash" aria-hidden="true"></i></button>
+                            </button>
+                        </a></td>
+                        <td class="text-center">
+                            <button class="btn btn-outline-primary" th:attr="ng-click='view(\''+${detail.id}+'\');'"
+                                    data-toggle="modal" data-target="#newType"><i class="fa fa-eye"></i>
+                            </button>
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="modal fade" id="newType" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">New Service</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label>Description &nbsp;:</label>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>{{description}}</label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <table class="table">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                </tr>
+                                <tr ng-repeat="cart in carts">
+                                    <td>{{cart.id}}</td>
+                                    <td>{{cart.description}}</td>
+                                    <td class="text-right">{{cart.price}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Total</b></td>
+                                    <td colspan="2" class="text-right"><b>{{totalAmount}}</b></td>
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+
+    function booking(id) {
+        window.open("/book/companybooking/" + id, '_self')
+    }
+
+    angular.module('bookApp', []).controller('bookController', function ($scope, $http, $filter) {
+        $scope.description = "";
+        $scope.totalAmount = 0;
+        $scope.bookid = 0;
+        $scope.carts = []
+
+        var status = [[${status}]]
+        $(document).ready(function () {
+            if (status == 1) {
+                swal({
+                    title: 'Successfully',
+                    text: 'Added Booking...',
+                    icon: 'success',
+                    timer: 2000,
+                    buttons: false,
+                })
+            }
+        });
+
+        $scope.editBooing = function (value) {
+            window.open("/book/edit_booking/" + value, '_self')
+        }
+        $scope.loadDetail = function (id) {
+            $.post("/api/viewBooking", {id: id}).done(function (data) {
+                $scope.description = data.booking[0].booking
+                $scope.totalAmount = data.booking[0].total
+                $scope.bookid = data.booking[0].bookingId
+
+                angular.forEach(data.list, function (value, key) {
+                    $scope.carts.push({
+                        id: value.service,
+                        description: value.type,
+                        price: value.amount,
+                        bookId: $scope.bookid
+                    })
+                })
+                $scope.$apply();
+            });
+        }
+
+        $scope.view = function (id) {
+            if ($scope.carts.length == 0) {
+                $scope.loadDetail(id)
+            } else {
+                $scope.carts.splice(0)
+                $scope.loadDetail(id)
+            }
+        }
+
+        $scope.cancel = function (value) {
+
+            $.post("/api/cancelBooking", {id: value}).done(function (data) {
+                if (data != null) {
+                    location.reload()
+                }
+            });
+        }
+
+        $scope.manage = function (value) {
+            swal({
+                text: "Do You Want To Process This Booking !",
+                showCancelButton: true,
+                confirmButtonColor: "#00c853",
+                cancelButtonColor: "#e53935",
+                confirmButtonText: '<i class="fa fa-cloud-upload"></i> Yes',
+                cancelButtonText: '<i class="fa fa-times-circle"></i> Close',
+                animation: true,
+                buttonsStyling: true
+            }).then(function (isConfirm) {
+
+                if (isConfirm) {
+                    window.swal({
+                        title: "Progressing........!",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                    $.post("/api/booking_progress", {id: value}).done(function (data) {
+                        if (data != null) {
+                            location.reload()
+                        }
+                    });
+
+                } else {
+                    swal("Cancelled", "", "error");
+                }
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    swal("Cancelled", "", "error");
+                }
+            })
+
+        }
+
+        $scope.completeProcess=function (value) {
+            swal({
+                text: "Do You Want To Process This Booking !",
+                showCancelButton: true,
+                confirmButtonColor: "#00c853",
+                cancelButtonColor: "#e53935",
+                confirmButtonText: '<i class="fa fa-cloud-upload"></i> Yes',
+                cancelButtonText: '<i class="fa fa-times-circle"></i> Close',
+                animation: true,
+                buttonsStyling: true
+            }).then(function (isConfirm) {
+
+                if (isConfirm) {
+                    window.swal({
+                        title: "Progressing........!",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                    $.post("/api/complete_progress", {id: value}).done(function (data) {
+                        if (data != null) {
+                            location.reload()
+                        }
+                    });
+
+                } else {
+                    swal("Cancelled", "", "error");
+                }
+            }, function (dismiss) {
+                if (dismiss === 'cancel') {
+                    swal("Cancelled", "", "error");
+                }
+            })
+        }
+    });
+</script>
+</html>

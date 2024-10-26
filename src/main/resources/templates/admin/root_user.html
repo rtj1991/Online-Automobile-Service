@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Booking | New Booking</title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper" ng-app="configApp" ng-controller="configController">
+    <div id="content" style="width: 100%">
+        <div class="form-row">
+            <div class="col-lg-4 col-sm-12"></div>
+            <div class="col-md-12 col-lg-4 col-sm-12">
+                <div class="card mt-4">
+                    <div class="card-body">
+
+                        <!-- form card register -->
+                        <div class="card card-outline-secondary">
+                            <div class="card-header">
+                                <h3 class="mb-0">Root User</h3>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" action="/createRootUser"  enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label for="inputName">Name</label>
+                                        <input class="form-control" id="inputName" placeholder="Root" value="root"
+                                               type="text" disabled="">
+                                        <input type="hidden" id="userType" th:field="*{info.userType}" >
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input name="company_email" type="email" class="form-control"
+                                               required="required"
+                                               placeholder="info@company.com" th:field="*{info.email}">
+                                        <label class="error" th:if="${#fields.hasErrors('info.companyEmail')}"
+                                               th:errors="*{info.email}">This field is required.</label>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Password</label>
+                                        <input ng-change="validatePassword()" name="info_password"
+                                               type="password" ng-model="info_password" id="password"
+                                               class="form-control"
+                                               placeholder="password" th:field="*{info.password}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="c_password">Verify Password</label>
+                                        <input ng-change="validatePassword()" name="info_c_password"
+                                               type="password" ng-model="info_c_password" id="c_password"
+                                               class="form-control"
+                                               placeholder="password" required>
+                                        <span id="error_pws"></span>
+                                    </div>
+                                    <div class="col-sm-10 col-sm-offset-1" style="padding-top: 0; margin-top: 0;">
+                                        <label class="error" th:if="${#fields.hasErrors('info.password')}"
+                                               th:errors="*{info.password}">This field is required.</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-success btn-lg float-right" type="submit">Register
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div><!-- /form card register -->
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-12"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+    angular.module('configApp', []).controller('configController', function ($scope) {
+        $scope.validatePassword = function () {
+
+            var passws = $scope.info_password
+            var passwsc = $scope.info_c_password
+            var errorpws = $('#error_pws');
+            var error_pws = document.getElementById("error_pws")
+            var c_password = document.getElementById("c_password")
+
+            if (passws != passwsc) {
+                errorpws.text("error password")
+                error_pws.style.color = "red"
+                c_password.style.borderColor = "red"
+            } else {
+                $('#error_pws').text("")
+                c_password.style.borderColor = ""
+                $('#userType').val(1)
+            }
+        }
+    });
+</script>
+</html>

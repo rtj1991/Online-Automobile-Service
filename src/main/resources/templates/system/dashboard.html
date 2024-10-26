@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Dashboard </title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" ng-app="chartloadApp" ng-controller="chartloadController">
+        <div th:replace="fragments/navbars::navbar">header</div>
+        <div class="row" th:if="${user==4}">
+            <div class="col-sm-12 col-md-6 col-lg-6 mt-2 mr-0.5">
+                <div id="container">
+                    <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="carrierServiceList()">
+                        Carrier Service
+                    </button>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 mt-2 mr-0.5">
+                <div id="container1">
+                    <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="fieldOfficerList()">Field
+                        Officer
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+
+    var app = angular.module("chartloadApp", []);
+    app.controller('chartloadController', function ($scope) {
+
+        var status = [[${status}]]
+
+        $(document).ready(function () {
+            if (status == 1) {
+                swal({
+                    title: 'Successfully',
+                    text: 'Added Services...',
+                    icon: 'success',
+                    timer: 2000,
+                    buttons: false,
+                })
+            } else if (status == 3) {
+                swal({
+                    title: 'Successfully',
+                    text: 'Update Your Profile !',
+                    icon: 'success',
+                    timer: 2000,
+                    buttons: false,
+                })
+            }
+
+        });
+
+        $scope.carrierServiceList = function () {
+            window.open("/book/carrier_service/", '_self')
+        }
+
+        $scope.fieldOfficerList = function () {
+            window.open("/book/field_officer/", '_self')
+        }
+
+    });
+
+</script>
+</html>

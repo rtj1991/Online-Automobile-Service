@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Dashboard </title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" ng-app="servicetypeApp" ng-controller="servicetypeController">
+        <div th:replace="fragments/navbars::navbar">header</div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <th>#</th>
+                                <th>DESCRIPTION</th>
+                                <th>ACTION</th>
+                            </tr>
+                            <tr ng-repeat="type in serviceType">
+                                <td id="typeId{{$index}}" value="{{type.id}}">{{type.id}}</td>
+                                <td>{{type.description}}</td>
+                                <td><input type="button" class="btn btn-success" ng-model="type.selectedId"
+                                           ng-click="addCart(type,$index)" value="add">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <form th:method="post" name="newpayments" id="newpayments" th:action="@{/saveServiceTypes}">
+                            <table class="table">
+                                <tr>
+                                    <th>#</th>
+                                    <th>DESCRIPTION</th>
+                                    <th>ADD PRICE</th>
+                                    <th>ACTION</th>
+                                </tr>
+                                <tr ng-repeat="cart in carts">
+                                    <td>{{cart.id}}</td>
+                                    <td>{{cart.description}}</td>
+                                    <td><input type="number" ng-change="minValue(cart)" id="prices"
+                                               ng-model="cart.price"
+                                               class="form-control"></td>
+                                    <td><input type="button" class="btn btn-danger" ng-click="remove($index)"
+                                               value="remove"></td>
+                                </tr>
+                            </table>
+                            <table ng-show="carts != null && carts != ''" class="table">
+                                <tr>
+                                    <th colspan="4" class="text-right"><input type="button" class="btn btn-primary"
+                                                                              ng-click="addServiceType()"
+                                                                              value="save"></th>
+                                </tr>
+                            </table>
+                            <input type="hidden" name="carts" value="{{carts}}">
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+    angular.module('servicetypeApp', []).controller('servicetypeController', function ($scope, $http, $filter) {
+
+        $scope.serviceType = [];
+
+        $scope.getServiceTypes = function () {
+
+            $http.post('/api/getService_type').then(function (response) {
+                console.log(response)
+                $scope.serviceType = response.data;
+            })
+        }
+        $scope.getServiceTypes();
+
+        $scope.carts = [];
+
+        $scope.addCart = function (type, index) {
+
+            var filterResult = $filter('filter')($scope.carts, {id: index + 1}, true);
+            if (filterResult.length != 0) {
+                swal("Already Added");
+            } else {
+                var filterPrice = $filter('filter')($scope.carts, {price: 0}, true)
+                if (filterPrice.length == 0) {
+                    $scope.carts.push({
+                        id: type.id,
+                        description: type.description,
+                        price: 0
+                    })
+                } else {
+                    swal("Please Add Price");
+                }
+
+            }
+        }
+
+        $scope.remove = function (index) {
+            rowCount = $scope.carts.length
+            if (rowCount > 1) {
+                $scope.carts.splice(index, 1);
+            }
+        }
+
+        $scope.minValue = function (value) {
+            if (value.price < 0) {
+                value.price = 0
+                swal("You Must Add Up To 0 ")
+            }
+        }
+
+        $scope.addServiceType = function () {
+            $('#newpayments').submit()
+        }
+    });
+</script>
+</html>

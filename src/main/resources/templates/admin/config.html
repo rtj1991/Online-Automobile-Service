@@ -1,0 +1,409 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>Register</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'/>
+    <meta name="viewport" content="width=device-width"/>
+    <link href="assets/font-awesome/font-awesome.css" rel="stylesheet">
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="assets/css/gsdk-bootstrap-wizard.css" rel="stylesheet"/>
+    <link href="assets/css/demo.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+</head>
+
+<body>
+<div class="image-container set-full-height" style="background-image: url('icon/wizard.jpg')">
+    <!--   Big container   -->
+    <div class="container" ng-app="configApp" ng-controller="configController">
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+
+                <!--      Wizard container        -->
+                <div class="wizard-container">
+
+                    <div class="card wizard-card" data-color="blue" id="wizardProfile">
+                        <form th:action="@{/createUser}" method="post" id="initForm" enctype="multipart/form-data">
+
+                            <div class="wizard-header">
+                                <h3>
+                                    <b>BUILD</b> YOUR PROFILE <br>
+                                    <small><a href="/">This information will let us know more about you.</a></small>
+                                </h3>
+                            </div>
+
+                            <div class="wizard-navigation">
+                                <ul>
+                                    <li><a href="#about" data-toggle="tab">About</a></li>
+                                    <li><a href="#model" data-toggle="tab">Business Model</a></li>
+                                    <li><a href="#business" data-toggle="tab">Company</a></li>
+                                </ul>
+
+                            </div>
+
+                            <div class="tab-content">
+                                <div class="tab-pane" id="about">
+                                    <div class="row">
+                                        <h4 class="info-text"> Let's start with the basic information</h4>
+                                        <div class="col-sm-4 col-sm-offset-1">
+                                            <div class="picture-container">
+                                                <div class="picture">
+                                                    <img th:src="@{images/default-avatar.png}" class="picture-src"
+                                                         id="wizardPicturePreview" title=""/>
+                                                    <input type="file" id="wizard-picture" enctype="multipart/form-data"
+                                                           name="profilePicture" onchange="readURL(this, 'info-img')">
+                                                </div>
+                                                <h6>Choose Picture</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>First Name
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input name="full_name" type="text" class="form-control"
+                                                       required="required"
+                                                       th:field="*{info.fullName}">
+                                                <label class="error" th:if="${#fields.hasErrors('info.fullName')}"
+                                                       th:errors="*{info.fullName}">This field is required.</label>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Last Name
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input name="last_name" type="text" class="form-control"
+                                                       required="required"
+                                                       th:field="*{info.lastName}">
+                                                <label class="error" th:if="${#fields.hasErrors('info.lastName')}"
+                                                       th:errors="*{info.lastName}">This field is required.</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>NIC
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input name="nic" type="text" class="form-control" required="required"
+                                                       th:field="*{info.nic}">
+                                                <label class="error" th:if="${#fields.hasErrors('info.nic')}"
+                                                       th:errors="*{info.nic}">This field is required.</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Mobile Number
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input name="nic" type="text" class="form-control" required="required"
+                                                       th:field="*{info.usermobile}">
+                                                <label class="error" th:if="${#fields.hasErrors('info.usermobile')}"
+                                                       th:errors="*{info.usermobile}">This field is required.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10 col-sm-offset-1">
+                                            <div class="form-group">
+                                                <label>Email
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input name="info_email" type="email" class="form-control"
+                                                       placeholder="yourname@example.com" th:field="*{info.email}">
+                                                <label class="error" th:if="${#fields.hasErrors('info.email')}"
+                                                       th:errors="*{info.email}">This field is required.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5 col-sm-offset-1">
+                                            <div class="form-group" style="padding-bottom: 0; margin-bottom: 0;">
+                                                <label>Password
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input ng-change="validatePassword()" name="info_password"
+                                                       type="password" ng-model="info_password" id="password"
+                                                       class="form-control"
+                                                       placeholder="password" th:field="*{info.password}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5 ">
+                                            <div class="form-group" style="padding-bottom: 0; margin-bottom: 0;">
+                                                <label>Confirm Password
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input ng-change="validatePassword()" name="info_c_password"
+                                                       type="password" ng-model="info_c_password" id="c_password"
+                                                       class="form-control"
+                                                       placeholder="password" required>
+                                            </div>
+                                            <span id="error_pws"></span>
+                                        </div>
+                                        <div class="col-sm-10 col-sm-offset-1" style="padding-top: 0; margin-top: 0;">
+                                            <label class="error" th:if="${#fields.hasErrors('info.password')}"
+                                                   th:errors="*{info.password}">This field is required.</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="model">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <h4 class="info-text"> Describe nature of your company? </h4>
+                                        </div>
+                                        <div class="col-sm-10 col-sm-offset-1">
+
+                                            <div class="form-group">
+                                                <label>Business Model
+                                                    <small>(required)</small>
+                                                </label>
+                                                <select name="businessModel" type="text" class="form-control"
+                                                        th:field="*{info.businessModel}" ng-value="" ng-model="businessModel">
+                                                    <option value="2">Garage</option>
+                                                    <option value="3">Vehicle Service</option>
+                                                    <option value="4">Vehicle Owner</option>
+                                                </select>
+                                                <label class="error" th:if="${#fields.hasErrors('info.businessModel')}"
+                                                       th:errors="*{info.businessModel}">This field is required.</label>
+                                            </div>
+                                            <div ng-if="!businessModel" class="form-group">
+                                                <div class="col-sm-12">
+                                                    <img th:src="@{/images/businesses.jpg}" style="width: 100%"
+                                                         alt="Business">
+                                                </div>
+                                            </div>
+                                            <div ng-if="businessModel == 2" class="form-group">
+                                                <div class="col-sm-12">
+                                                    <img th:src="@{/images/garage1.png}" style="width: 100%"
+                                                         alt="Business">
+                                                </div>
+                                            </div>
+                                            <div ng-if="businessModel == 3" class="form-group">
+                                                <div class="col-sm-12">
+                                                    <img th:src="@{/images/automobile.png}" style="width: 100%"
+                                                         alt="Business">
+                                                </div>
+                                            </div>
+                                            <div ng-if="businessModel == 4" class="form-group">
+                                                <div class="col-sm-12">
+                                                    <img th:src="@{/images/owner.png}" style="width: 100%"
+                                                         alt="Business">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="business">
+                                    <h4 class="info-text"> Let me know more information about your business? </h4>
+                                    <div class="row">
+                                        <div class="col-sm-4 col-sm-offset-1">
+                                            <div class="picture-container">
+                                                <div class="picture">
+                                                    <img th:src="@{assets/img/default-avatar.png}" class="picture-src"
+                                                         id="logo-img1" title=""/>
+                                                    <input type="file" name="logo" id="logo1"
+                                                           enctype="multipart/form-data"
+                                                           onchange="readURL1(this, 'info-img')">
+                                                </div>
+                                                <h6>Choose Picture</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Company Name
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input ng-if="businessModel != 4" name="company_name" type="text"
+                                                       class="form-control" required="required"
+                                                       th:field="*{info.companyName}">
+                                                <input ng-if="businessModel == 4" name="company_name" type="text"
+                                                       class="form-control" disabled>
+                                                <label class="error" th:if="${#fields.hasErrors('info.companyName')}"
+                                                       th:errors="*{info.companyName}">This field is required.</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Reg. No
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input ng-if="businessModel != 4" name="reg_no" type="text"
+                                                       class="form-control" required="required"
+                                                       th:field="*{info.regNo}">
+                                                <input ng-if="businessModel == 4" name="company_name" type="text"
+                                                       class="form-control" disabled>
+                                                <label class="error" th:if="${#fields.hasErrors('info.regNo')}"
+                                                       th:errors="*{info.regNo}">This field is required.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-10 col-sm-offset-1">
+                                            <div class="form-group">
+                                                <label>Location</label>
+                                                <select ng-if="businessModel != 4" class="form-control" id="location"
+                                                        name="location"
+                                                        th:field="*{info.location}">
+                                                    <option th:value="0">------select location------</option>
+                                                    <option th:each="list : ${location}" th:value="${{list.id}}"
+                                                            th:text="${list.getLocationName()}"></option>
+                                                </select>
+                                                <input ng-if="businessModel == 4" name="company_name" type="text"
+                                                       class="form-control" disabled>
+                                                <label class="error" th:if="${#fields.hasErrors('info.location')}"
+                                                       th:errors="*{info.location}">This field is required.</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Email</label>
+                                                <input ng-if="businessModel != 4" name="company_email" type="email"
+                                                       class="form-control" required="required"
+                                                       placeholder="info@company.com" th:field="*{info.companyEmail}">
+                                                <input ng-if="businessModel == 4" name="company_name" type="text"
+                                                       class="form-control" disabled>
+                                                <label class="error" th:if="${#fields.hasErrors('info.companyEmail')}"
+                                                       th:errors="*{info.companyEmail}">This field is required.</label>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Address
+                                                    <small>(required)</small>
+                                                </label>
+                                                <input ng-if="businessModel != 4" name="company_address" type="text"
+                                                       class="form-control" required="required"
+                                                       th:field="*{info.address}">
+                                                <input ng-if="businessModel == 4" name="company_name" type="text"
+                                                       class="form-control" disabled>
+                                                <label class="error" th:if="${#fields.hasErrors('info.address')}"
+                                                       th:errors="*{info.address}">This field is required.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5 col-sm-offset-1">
+                                            <div class="form-group">
+                                                <div class="md-form">
+                                                    <label for="input_starttime">Start Time</label>
+                                                    <input ng-if="businessModel != 4" placeholder="Selected time"
+                                                           type="text" id="input_starttime"
+                                                           class="form-control timepicker" th:field="*{info.startTime}">
+                                                    <input ng-if="businessModel == 4" name="company_name" type="text"
+                                                           class="form-control" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <div class="form-group">
+                                                <div class="md-form">
+                                                    <label for="input_endtime">End Time</label>
+                                                    <input ng-if="businessModel != 4" placeholder="Selected time"
+                                                           type="text" id="input_endtime"
+                                                           class="form-control timepicker" th:field="*{info.endTime}">
+                                                    <input ng-if="businessModel == 4" name="company_name" type="text"
+                                                           class="form-control" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-5 col-sm-offset-1">
+                                            <div class="form-group">
+                                                <label>Telephone</label>
+                                                <input ng-if="businessModel != 4" name="company_telephone" type="tel"
+                                                       class="form-control" required="required"
+                                                       th:field="*{info.telephone}">
+                                                <input ng-if="businessModel == 4" name="company_name" type="text"
+                                                       class="form-control" disabled>
+                                                <label class="error" th:if="${#fields.hasErrors('info.telephone')}"
+                                                       th:errors="*{info.telephone}">This field is required.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <div class="form-group">
+                                                <label>Fax</label>
+                                                <input ng-if="businessModel != 4" name="company_fax" type="tel"
+                                                       class="form-control" required="required"
+                                                       th:field="*{info.fax}">
+                                                <input ng-if="businessModel == 4" name="company_name" type="text"
+                                                       class="form-control" disabled>
+                                                <label class="error" th:if="${#fields.hasErrors('info.fax')}"
+                                                       th:errors="*{info.fax}">This field is required.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="wizard-footer height-wizard">
+                                    <div class="pull-right">
+                                        <input type='button' class='btn btn-next btn-fill btn-primary btn-wd btn-sm'
+                                               name='next' value='Next'/>
+                                        <button type='submit' class='btn btn-finish btn-fill btn-primary btn-wd btn-sm'>
+                                            Finish
+                                        </button>
+
+                                    </div>
+
+                                    <div class="pull-left">
+                                        <input type='button' class='btn btn-previous btn-fill btn-default btn-wd btn-sm'
+                                               name='previous' value='Previous'/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div> <!-- wizard container -->
+            </div>
+        </div><!-- end row -->
+    </div> <!--  big container -->
+
+    <div class="footer">
+        <div class="container">
+            Water ERP<sup>®</sup> <a href="#">Copyrights 2018</a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+
+<script src="assets/js/jquery-2.2.4.min.js" type="text/javascript"></script>
+<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="assets/js/gsdk-bootstrap-wizard.js"></script>
+<script src="assets/js/jquery.bootstrap.wizard.js" type="text/javascript"></script>
+<script src="assets/js/jquery.validate.min.js"></script>
+<script th:src="@{/js/angular.min.js}" type="application/javascript"></script>
+<script src="assets/js/jquery.timepicker.min.js" type="text/javascript"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    $(document).ready(function () {
+        $('#input_starttime').timepicker({
+            timeFormat: 'HH:mm:ss',
+            interval: 30,
+            defaultTime: '08:30',
+            dynamic: false,
+            dropdown: true,
+            scrollbar: true
+        });
+        $('#input_endtime').timepicker({
+            timeFormat: 'HH:mm:ss',
+            interval: 30,
+            defaultTime: '17:30',
+            dynamic: false,
+            dropdown: true,
+            scrollbar: true
+        });
+    });
+
+    angular.module('configApp', []).controller('configController', function ($scope) {
+
+        $scope.validatePassword = function () {
+
+            var passws = $scope.info_password
+            var passwsc = $scope.info_c_password
+            var errorpws = $('#error_pws');
+            var error_pws = document.getElementById("error_pws")
+            var c_password = document.getElementById("c_password")
+
+            if (passws != passwsc) {
+                errorpws.text("error password")
+                error_pws.style.color = "red"
+                c_password.style.borderColor = "red"
+            } else {
+                $('#error_pws').text("")
+                c_password.style.borderColor = ""
+            }
+        }
+    });
+
+</script>
+</html>

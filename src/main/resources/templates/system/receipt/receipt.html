@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Receipt | Receipt</title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+    <style>
+        .cnt{
+            margin: auto;
+            width: 70%;
+            padding: 20px;
+        }
+        .hdr{
+            font-style: normal;
+            font-size: 2em;
+        }
+
+        td{
+
+        }
+
+        tr > td{
+            padding: 5px;
+            width: 50%;
+        }
+        @page { size: auto;  margin: 0mm; }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printReceipt * {
+                visibility: visible;
+            }
+            #printReceipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+            #receiptPrint{
+                visibility: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" >
+        <div th:replace="fragments/navbars::navbar">header</div>
+
+        <div class="container-fluid small" id="printReceipt">
+            <div style="margin-top: 5%;">
+                <div class="cnt">
+                    <div class="lgo"><img style="width: 10%;height: 10%" th:src="@{http://localhost:8080/images/logo1.jpg}"/></div>
+                    <div>
+                        <hr />
+                    </div>
+                    <div class="hdr"><p>Payment Receipt</p></div>
+                    <div>
+                        <hr />
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 dtl">
+                            <table>
+                                <tr>
+                                    <td>Printed On</td>
+                                    <td th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Receipt Number</td>
+                                    <td th:text="${receipt.getId()}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Customer Name</td>
+                                    <td th:text="${receipt.getBookingId().getCreatedBy().fullName}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Amount</td>
+                                    <td th:text="${#numbers.formatDecimal(receipt.paidAmount, 0, 'COMMA', 2, 'POINT')}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Amount Due</td>
+                                    <td th:text="${#numbers.formatDecimal(receipt.getBookingId().getTotalAmount(), 0, 'COMMA', 2, 'POINT')}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Invoice Number</td>
+                                    <td th:text="${receipt.bookingId.id}"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-sm-6 dtl">
+                            <img style="width: 50%;height: 75%" th:src="@{http://localhost:8080/icon/approved.gif}"/>
+                        </div>
+                    </div>
+
+                    <div>
+                        <table class="table" id="invoice">
+                            <tr>
+                                <th>#</th>
+                                <th>SERVICE TYPE</th>
+                                <th>AMOUNT</th>
+                            </tr>
+                            <tr th:each="detail:${detalis}">
+                                <td th:text="${detail.id}"></td>
+                                <td th:text="${detail.serviceType.getDescription()}"></td>
+                                <td class="text-right" th:text="${#numbers.formatDecimal(detail.amount, 0, 'COMMA', 2, 'POINT')}"></td>
+                            </tr>
+                        </table>
+                        <input type="button" class="btn btn-outline-primary" value="print" onclick="printReceipt()" id="receiptPrint">
+                    </div>
+                    <div class="ftr">
+                <span>
+                            <p th:text="${receipt.bookingId.bookedCompany.getCompanyName()}"></p>
+                            <p>© 2020 Online Automomile Service,</p>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript" th:inline="javascript">
+    function printReceipt() {
+        window.print()
+    }
+
+</script>
+
+</html>

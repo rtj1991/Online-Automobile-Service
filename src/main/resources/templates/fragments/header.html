@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Dashboard</title>
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+</head>
+<body>
+
+<!-- Header -->
+<th:block th:fragment="header">
+    <script type="text/javascript" th:inline="javascript">
+
+        function collapse() {
+            if ($('#sidebar').hasClass('active')) {
+                $('#sidebar').removeClass('active');
+            } else {
+                $('#sidebar').addClass('active');
+            }
+        }
+    </script>
+    <style>
+        .nav-bottom {
+            background-color: #b3b3b3;
+            padding: 5px 0 5px 0;
+            min-height: 0;
+            bottom: 0;
+            left: 260px;
+            right: 20px;
+            float: right;
+            margin-bottom: 0;
+            position: fixed;
+            width: auto;
+        }
+
+        .toggle {
+            left: 100px !important;
+        }
+
+        #content {
+            width: 100%;
+            height: 500px;
+            overflow: scroll;
+            scroll-behavior: smooth;
+        }
+    </style>
+</th:block>
+
+
+</body>
+
+</html>

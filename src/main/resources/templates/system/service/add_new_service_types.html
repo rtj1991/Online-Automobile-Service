@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Dashboard </title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" ng-app="newservicetypeApp" ng-controller="newservicetypeController">
+        <div th:replace="fragments/navbars::navbar">header</div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <input type="button" class="btn btn-success" data-toggle="modal" data-target="#newType"
+                               value="Add New">
+                        <table class="table mt-4">
+                            <tr>
+                                <th>#</th>
+                                <th>DESCRIPTION</th>
+                                <th>ADD PRICE</th>
+                                <th>ACTION</th>
+                            </tr>
+                            <tr ng-repeat="type in serviceTypes">
+                                <td>{{type.id}}</td>
+                                <td>{{type.description}}</td>
+                                <td><input type="number" id="prices" ng-model="type.price" class="form-control"></td>
+                                <td><input type="button" id="remove" class="btn btn-danger" value="Add"
+                                           ng-click="AddtoCart(type)"></td>
+
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <table class="table mt-4">
+                            <tr>
+                                <th>#</th>
+                                <th>DESCRIPTION</th>
+                                <th>ADD PRICE</th>
+                                <th>ACTION</th>
+                            </tr>
+                            <tr ng-repeat="cart in serviceTypesCart">
+                                <td>{{cart.id}}</td>
+                                <td>{{cart.description}}</td>
+                                <td><input type="number" id="pricescart" ng-model="cart.price" ng-value="cart.price"
+                                           class="form-control"></td>
+                                <td><input type="button" lass="btn btn-danger" value="edit"
+                                           ng-click="edit($index)"></td>
+
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal fade" id="newType" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">New Service</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <tr>
+                                <th class="text-center">Service Type</th>
+                                <th class="text-center">Description</th>
+                                <th class="text-center">price</th>
+                            </tr>
+                            <tr>
+                                <td><input type="text" ng-model="sType" class="form-control"></td>
+                                <td><input type="text" ng-model="sDescription" class="form-control"></td>
+                                <td><input type="text" ng-model="sPrice" class="form-control"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" ng-click="addServiceType()" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+    angular.module('newservicetypeApp', []).controller('newservicetypeController', function ($scope, $http, $filter) {
+
+        $scope.serviceTypes = []
+
+        $scope.serviceTypesCart = []
+
+        $scope.remove = function (value) {
+            console.log(value)
+            if ($scope.serviceTypes.length > 1) {
+                $scope.serviceTypes.splice(value, 1)
+            }
+        }
+        $scope.getCartServiceTypes = function () {
+
+            $http.post('/api/getCompany_service_type').then(function (response) {
+                $scope.serviceTypesCart = response.data;
+            })
+        }
+        $scope.getCartServiceTypes()
+
+        $scope.getServiceTypes = function () {
+
+            $http.post('/api/company_service').then(function (response) {
+                $scope.serviceTypes = response.data;
+            })
+        }
+        $scope.getServiceTypes()
+
+        $scope.AddtoCart = function (value) {
+
+            $.post("/api/save_Service_type", {id: value.id, price: value.price}).done(function (data) {
+                if (data != null) {
+                    $scope.getServiceTypes()
+                    $scope.getCartServiceTypes()
+                }
+            });
+        }
+        $scope.addServiceType = function () {
+
+            $.post("/api/save_new_Service_type", {
+                type: $scope.sType,
+                description: $scope.sDescription,
+                price: $scope.sPrice
+            }).done(function (data) {
+                if (data != null) {
+                    // $scope.getServiceTypes()
+                    $(function () {
+                        $('#newType').modal('toggle');
+                    });
+                    $scope.getCartServiceTypes()
+                }
+            });
+        }
+
+    });
+
+</script>
+</html>

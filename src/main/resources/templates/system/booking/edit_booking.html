@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online AutoMobile Service | Booking | New Booking</title>
+
+    <div th:replace="fragments/scripts::scripts">scripts</div>
+    <div th:replace="fragments/header::header"></div>
+
+    <!--<style>-->
+    <!--.card {-->
+    <!--border-radius: 20%;-->
+    <!--}-->
+    <!--</style>-->
+</head>
+
+<body>
+<div th:replace="fragments/header::header">header</div>
+<div class="wrapper">
+    <div th:replace="fragments/navbars::sidebar">header</div>
+    <div id="content" style="width: 100%" ng-app="companybookApp" ng-controller="companybookController">
+        <div th:replace="fragments/navbars::navbar">header</div>
+        <form class="form-horizontal hidden-print" id="dateSearch" method="post" role="form"
+              th:action="@{/book/edit_booking/} + ${company.id}">
+
+            <div class="form-row my-12">
+                <div class="form-group col-md-2">
+                    <label>Company Name &nbsp;:</label>
+                </div>
+                <div class="form-group col-md-2">
+                    <label th:text="${company.getCompanyName()}"></label>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>Available Booking Date :</label>
+                </div>
+                <div class="form-group col-md-2">
+
+                    <input class="form-control" name="searchDate" id="datepicker1" th:field="*{detail.searchDate}"
+                           required>
+                </div>
+                <div class="form-group col-md-2">
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </div>
+            </div>
+            <div class="form-row my-12">
+                <div class="form-group col-md-2">
+                    <label>Booking Limit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :</label>
+                </div>
+                <div class="form-group col-md-2">
+                    <label th:text="${company.getBookingLimit()}"></label>
+                </div>
+
+                <div class="form-group col-md-2">
+                    <label>Available Booking &nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                </div>
+                <div class="form-group col-md-2">
+                    <input type="hidden" name="company">
+                    <label th:text="${booking}"></label>
+                </div>
+            </div>
+
+        </form>
+        <form class="form-horizontal hidden-print" id="bookinForm" method="post" role="form"
+              action="/book/updateBooking/">
+            <input type="hidden" name="company" th:value="${company.id}">
+            <div class="form-row align-items-center">
+                <div class="col-sm-2 ">
+                    <label>Description &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</label>
+                </div>
+                <div class="col-sm-2 ">
+                    <input type="text" class="form-control" th:field="*{detail.description}" id="description" placeholder="descrption">
+                </div>
+            </div>
+
+            <div class="form-row my-4">
+                <div class="form-group col-md-3">
+                    <label>vehicle Model</label>
+                    <select class="form-control" name="vehicleModel" id="vehicleModel" th:field="*{detail.model}">
+                        <option th:value="0">------select Model------</option>
+                        <option th:each="list : ${models}" th:value="${list.id}"
+                                th:text="${list.getModelName()}"></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Vehicle Type</label>
+                    <select class="form-control" id="vehicleType" th:field="*{detail.vType}">
+                        <option th:value="0">------select Type------</option>
+                        <option th:each="list : ${types}" th:value="${{list.id}}"
+                                th:text="${list.getName()}"></option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="vehicleNo">vehicle No</label>
+                    <input type="text" class="form-control" id="vehicleNo" placeholder="Vehicle No"
+                           th:field="*{detail.vehicleNo}" required>
+                </div>
+
+            </div>
+            <div class="form-row">
+            </div>
+            <input type="hidden" th:field="*{detail.searchDate}">
+
+            <div class="form-row">
+                <div class="col-md-6">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <table class="table">
+                                <tr>
+                                    <th>#</th>
+                                    <th>DESCRIPTION</th>
+                                    <th>PRICE</th>
+                                    <th>ACTION</th>
+                                </tr>
+                                <tr ng-show="checkStatus == false" ng-repeat="cart in serviceType">
+                                    <td>{{cart.id}}</td>
+                                    <td>{{cart.description}}</td>
+                                    <td>{{cart.price}}</td>
+                                    <td><input type="button" id="remove" class="btn btn-danger" value="Add"
+                                               ng-click="AddtoCart(cart)"></td>
+
+                                </tr>
+                                <tr ng-show="checkStatus == true" ng-repeat="cart in SecondaryserviceType">
+                                    <td>{{cart.id}}</td>
+                                    <td>{{cart.description}}</td>
+                                    <td>{{cart.price}}</td>
+                                    <td><input type="button" id="addcart" class="btn btn-danger" value="Add"
+                                               ng-click="AddtoCart(cart)"></td>
+
+                                </tr>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <table class="table">
+                                <tr>
+                                    <th>#</th>
+                                    <th>DESCRIPTION</th>
+                                    <th>PRICE</th>
+                                    <th>ACTION</th>
+                                </tr>
+                                <tr ng-repeat="cart in serviceCart">
+                                    <td>{{cart.id}}</td>
+                                    <td>{{cart.type}}</td>
+                                    <td class="text-right">{{cart.price}}</td>
+                                    <td><input type="button" class="btn btn-danger" ng-click="remove($index,cart)"
+                                               value="remove"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" ng-show="checkStatus == true" class="text-right">{{totalPrice()}}</td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row mt-4">
+                <div class="col-md-12 text-right">
+                    <input type="button" class="btn btn-primary text-right" value="submit" ng-click="submission()">
+                </div>
+            </div>
+            <input type="hidden" name="carts" value="{{serviceCart}}">
+            <input type="hidden" name="total" value="{{totalPrice()}}">
+            <input type="hidden" name="bookId" th:value="${{company.id}}">
+        </form>
+
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+
+    var currentDate = $('#datepicker1').val();
+    if (currentDate == null || currentDate == "") {
+        $(function () {
+            $("#datepicker1").datepicker({
+                minDate: 0,
+                dateFormat: 'yy-mm-dd'
+            }).datepicker('setDate', 'today');
+        });
+    } else {
+        $(function () {
+            $("#datepicker1").datepicker({
+                minDate: 0,
+                dateFormat: 'yy-mm-dd'
+            });
+        });
+    }
+
+    angular.module('companybookApp', []).controller('companybookController', function ($scope, $http, $filter) {
+
+        var available_booking = [[${booking}]];
+        var company = [[${company.id}]];
+
+        $scope.serviceCart = [];
+        $scope.serviceType = [];
+        $scope.SecondaryserviceType = [];
+        $scope.checkStatus = false;
+
+        $scope.loadMainService = function () {
+            $.post("/api/getMainService", {company: company}).done(function (data) {
+                $scope.serviceType = data
+                $scope.$apply();
+            });
+        }
+        $scope.loadMainService()
+
+        $scope.getSecondaryService = function () {
+            $.post("/api/getSecondaryService", {company: company}).done(function (data) {
+                $scope.SecondaryserviceType = data
+                $scope.$apply();
+            });
+        }
+        $scope.getSecondaryService()
+
+        $scope.AddtoCart = function (value) {
+
+            var result = $filter('filter')($scope.serviceCart, {status: value.status}, true);
+            var resultSecondary = $filter('filter')($scope.serviceCart, {status: value.status, id: value.id}, true);
+            if (result.length == 0) {
+                $scope.checkStatus = true;
+                $scope.serviceCart.push({
+                    id: value.id,
+                    type: value.description,
+                    price: value.price,
+                    status: value.status
+                })
+            } else {
+                $scope.checkStatus = true;
+                if (resultSecondary == 0) {
+                    $scope.serviceCart.push({
+                        id: value.id,
+                        type: value.description,
+                        price: value.price,
+                        status: value.status
+                    })
+                } else {
+                    swal("You Can Add Only One Time")
+                }
+            }
+            $scope.totalPrice()
+            console.log($scope.totalPrice())
+        }
+
+        $scope.remove = function (value, cart) {
+
+            var resultSecondary = $filter('filter')($scope.serviceCart, {status: cart.status, id: cart.id}, true);
+            if ($scope.serviceCart.length > 1) {
+                $scope.serviceCart.splice(value, 1)
+            }
+            var result = $filter('filter')($scope.serviceCart, {status: cart.status}, true);
+            if (cart.status == 2) {
+                $scope.checkStatus = true;
+                $scope.serviceType.push({
+                    id: cart.id,
+                    type: cart.description,
+                    price: cart.price,
+                    status: cart.status
+                })
+            } else {
+                if (result.length == 0) {
+                    $scope.checkStatus = false;
+                } else {
+                    $scope.checkStatus = true;
+
+                }
+            }
+            $scope.totalPrice()
+            console.log($scope.totalPrice())
+        }
+
+        $scope.totalPrice = function () {
+            var totalamount=0;
+            angular.forEach($scope.serviceCart, function (value, key) {
+                totalamount += value.price
+            });
+            return totalamount;
+        }
+        if (available_booking < 1) {
+            $('#vehicleModel').prop("disabled", true)
+            $('#vehicleType').prop("disabled", true)
+            $('#serviceType').prop("disabled", true)
+            $('#vehicleNo').prop("disabled", true)
+            $('#description').prop("disabled", true)
+        }
+        $scope.submission = function () {
+            console.log($scope.serviceCart.length)
+            var model = $('#vehicleModel').val();
+            var type = $('#vehicleType').val();
+            var service = $('#serviceType').val();
+            var vehicleno = $('#vehicleNo').val();
+            var description = $('#description').val();
+
+            if (available_booking < 1) {
+                swal({
+                    text: "You Do Not Have Enough Booking Today !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timerProgressBar: true,
+                })
+            } else if (model == 0) {
+                swal({
+                    text: "Please Select the Vehicle Model !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (type == 0) {
+                swal({
+                    text: "Please Select the Vehicle Type !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (service == 0) {
+                swal({
+                    text: "Please Select the Service Type !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (vehicleno == "") {
+                swal({
+                    text: "Please Enter the Vehicle Registration No !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else if (description == "") {
+                swal({
+                    text: "Please Enter the Description !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            }else if ($scope.serviceCart.length == 0){
+                swal({
+                    text: "Please Add The Service !",
+                    animation: true,
+                    buttonsStyling: true,
+                    timer: 2000,
+                    timerProgressBar: true,
+                })
+            } else {
+
+                $('#bookinForm').submit()
+            }
+
+        }
+    });
+</script>
+</html>

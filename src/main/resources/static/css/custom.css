@@ -1,0 +1,132 @@
+.autocomplete {
+    position: absolute;
+    margin-top: -1% !important;
+    margin-left: 1% !important;
+    padding: 5px;
+    width: 600px;
+    background-color: #ececec !important;
+    z-index: 9999;
+}
+
+.content {
+    padding-top: 60px;
+    padding-bottom: 70px;
+}
+
+.content-sm {
+    margin: 20px;
+}
+
+.xpanel {
+    overflow: hidden
+}
+
+.xpanel-list {
+    padding-left: 0;
+    list-style: none
+}
+
+.xpanel a {
+    float: left;
+    width: 115px;
+    height: 115px;
+    padding: 20px;
+    font-size: 10px;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    background-color: #f9f9f9;
+    border: 1px solid #fff
+}
+
+.xpanel-bordered a {
+    float: left;
+    width: 115px;
+    height: 115px;
+    padding: 20px;
+    margin-left: 10px;
+    font-size: 10px;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    background-color: #fff;
+    border: 2px solid #2196F3;
+    border-radius: 10px;
+}
+
+.xpanel-bordered .tile-button {
+    float: left;
+    width: 115px;
+    height: 115px;
+    padding: 20px;
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 10px;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    background-color: #fff;
+    color: #2196F3;
+    border: 2px solid #2196F3;
+    border-radius: 10px;
+}
+
+.xpanel .xpanel-tile {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    font-size: 24px
+}
+
+.xpanel .xpanel-tile-text {
+    display: block;
+    text-align: center;
+    word-wrap: break-word
+}
+
+.xpanel a:hover {
+    color: #fff;
+    background-color: #2196F3
+}
+
+.xpanel .tile-button:hover {
+    color: #fff;
+    background-color: #2196F3
+}
+
+.xpanel li .danger:hover {
+    color: #fff;
+    background-color: #F44336;
+    border: 2px solid #F44336;
+}
+
+.bs-callout-warning {
+    border-left-color: #aa6708;
+}
+
+.bs-callout {
+    padding: 20px;
+    margin: 0px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+}
+
+.scrollable {
+    height: 400px;
+!important;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+/*.accordion .card-header:after {*/
+/*font-family: 'FontAwesome';*/
+/*content: "\f068";*/
+/*float: right;*/
+/*}*/
+/*.accordion .card-header.collapsed:after {*/
+/*!* symbol for "collapsed" panels *!*/
+/*content: "\f067";*/
+/*}*/
+
+
+
